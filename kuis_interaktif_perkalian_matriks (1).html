@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Interaktif Perkalian Matriks</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- KaTeX CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <!-- KaTeX JS -->
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMath();"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .katex-display { overflow-x: auto; overflow-y: hidden; }
+        .math-wrap { overflow-x: auto; overflow-y: hidden; padding-top: 0.25rem; padding-bottom: 0.25rem; }
+        .math-wrap::-webkit-scrollbar { height: 4px; }
+        .math-wrap::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
+    <!-- Header -->
+    <header class="bg-white border-b border-slate-200 py-4 px-6 shadow-sm sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-indigo-600 p-2.5 rounded-xl text-white font-bold text-xl shadow-md shadow-indigo-600/20">KM</div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight text-slate-900">Kuis Perkalian Matriks</h1>
+                    <p class="text-xs text-slate-500">Latihan Soal Interaktif (25 Soal)</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="bg-indigo-50 px-4 py-2 rounded-xl border border-indigo-100 flex items-center gap-2">
+                    <span class="text-xs text-slate-600 font-medium">Skor:</span>
+                    <span id="scoreDisplay" class="text-indigo-600 font-bold text-lg">0</span>
+                </div>
+                <button onclick="openResetModal()" class="bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 text-xs font-semibold px-3.5 py-2.5 rounded-xl transition">Reset Kuis</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-5xl mx-auto w-full p-4 sm:p-6 flex-grow grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <!-- Question Area (Left 3 cols) -->
+        <div class="lg:col-span-3 bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col justify-between">
+            <div>
+                <div class="flex justify-between items-center mb-5 border-b border-slate-100 pb-3.5">
+                    <span id="questionCounter" class="text-sm font-bold text-indigo-600 uppercase tracking-wider">Soal 1 dari 22</span>
+                    <span id="statusBadge" class="text-xs px-3 py-1 rounded-full font-semibold bg-slate-100 text-slate-600">Belum Dijawab</span>
+                </div>
+                
+                <div id="questionText" class="text-base sm:text-lg text-slate-800 mb-6 leading-relaxed font-medium math-wrap">
+                    <!-- Dynamic Question Text -->
+                </div>
+
+                <div id="optionsContainer" class="space-y-3 mb-6">
+                    <!-- Dynamic Options -->
+                </div>
+
+                <!-- Explanation Box (Muncul setelah menjawab) -->
+                <div id="explanationBox" class="hidden mb-6 p-5 rounded-xl bg-indigo-50/70 border border-indigo-200 text-slate-700 text-sm sm:text-base leading-relaxed overflow-x-auto">
+                    <div class="flex items-center gap-2 font-bold text-indigo-800 mb-2">
+                        <svg class="w-5 h-5 text-indigo-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>Pembahasan Langkah demi Langkah:</span>
+                    </div>
+                    <div id="explanationText" class="space-y-2 text-slate-800"></div>
+                </div>
+            </div>
+
+            <!-- Navigation Controls -->
+            <div class="flex flex-wrap justify-between items-center gap-3 pt-4 border-t border-slate-100">
+                <button onclick="prevQuestion()" id="prevBtn" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-4 py-2.5 rounded-xl text-sm transition disabled:opacity-40 disabled:cursor-not-allowed">Sebelumnya</button>
+                <div id="feedbackBox" class="text-sm font-semibold px-3 py-1.5 rounded-lg hidden"></div>
+                <button onclick="nextQuestion()" id="nextBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition shadow-md shadow-indigo-600/20 disabled:opacity-40 disabled:cursor-not-allowed">Selanjutnya</button>
+            </div>
+        </div>
+
+        <!-- Sidebar Navigation Grid (Right 1 col) -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm flex flex-col h-fit">
+            <h3 class="text-sm font-bold text-slate-700 mb-3.5 uppercase tracking-wider">Navigasi Soal (25)</h3>
+            <div id="navGrid" class="grid grid-cols-5 gap-2">
+                <!-- Dynamic Nav Buttons -->
+            </div>
+            <div class="mt-6 pt-4 border-t border-slate-100 text-xs text-slate-600 space-y-2">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-3.5 h-3.5 rounded-md bg-emerald-500"></div> <span>Jawaban Benar</span>
+                </div>
+                <div class="flex items-center gap-2.5">
+                    <div class="w-3.5 h-3.5 rounded-md bg-rose-500"></div> <span>Jawaban Salah</span>
+                </div>
+                <div class="flex items-center gap-2.5">
+                    <div class="w-3.5 h-3.5 rounded-md bg-slate-100 border border-slate-300"></div> <span>Belum Dijawab</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Custom Modal Konfirmasi Reset -->
+    <div id="resetModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl border border-slate-200 max-w-sm w-full p-6 shadow-xl">
+            <h3 class="text-lg font-bold text-slate-900 mb-2">Reset Progres Kuis?</h3>
+            <p class="text-sm text-slate-600 mb-6">Semua jawaban yang sudah Anda isi akan dihapus dan skor kembali ke 0.</p>
+            <div class="flex justify-end gap-3">
+                <button onclick="closeResetModal()" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 transition">Batal</button>
+                <button onclick="confirmResetQuiz()" class="px-4 py-2 rounded-xl text-sm font-semibold text-white bg-rose-600 hover:bg-rose-700 transition">Ya, Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500">
+        <p>Kuis Interaktif Perkalian Matriks &bull; Tersimpan Otomatis di Perangkat</p>
+    </footer>
+
+    <!-- Script Application Logic -->
+    <script>
+        const questions = [
+            {
+                id: 1,
+                question: "Hasil dari $\\begin{bmatrix} 2 & -1 \\\\ 3 & 0 \\end{bmatrix} \\times \\begin{bmatrix} -2 & 0 & 2 \\\\ 3 & 1 & 0 \\end{bmatrix}$ adalah...",
+                options: [
+                    "$\\begin{bmatrix} 6 & 2 & -3 \\\\ 4 & 1 & 5 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} 2 & 1 & 3 \\\\ -1 & 0 & 4 \\\\ 3 & 2 & 2 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} -7 & -1 & 4 \\\\ -6 & 0 & 6 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} 2 & 1 & 4 \\\\ 1 & 2 & 0 \\\\ 5 & -7 & 4 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} 2 & -1 & 5 \\\\ 0 & 1 & 3 \\end{bmatrix}$"
+                ],
+                answer: 2, // C
+                explanation: "Kalikan baris pada matriks pertama dengan kolom pada matriks kedua:<br>$\\begin{bmatrix} 2(-2)+(-1)(3) & 2(0)+(-1)(1) & 2(2)+(-1)(0) \\\\ 3(-2)+0(3) & 3(0)+0(1) & 3(2)+0(0) \\end{bmatrix} = \\begin{bmatrix} -7 & -1 & 4 \\\\ -6 & 0 & 6 \\end{bmatrix}$ (Jawaban: C)"
+            },
+            {
+                id: 2,
+                question: "Jika $A = \\begin{bmatrix} 0 & 1 & 2 \\\\ -2 & 0 & 3 \\end{bmatrix}$ dan $B = \\begin{bmatrix} 4 & 2 \\\\ 1 & 0 \\\\ 3 & -1 \\end{bmatrix}$, maka $A \\times B = \\dots$",
+                options: [
+                    "$\\begin{bmatrix} 7 & -2 \\\\ 1 & -7 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} 9 & -16 \\\\ 0 & 1 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} 6 & 2 \\\\ 1 & -3 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} 5 & -2 \\\\ 2 & 0 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} 4 & 3 \\\\ 1 & 2 \\end{bmatrix}$"
+                ],
+                answer: 0, // A
+                explanation: "Matriks $A$ berordo $2 \\times 3$ dan $B$ berordo $3 \\times 2$, sehingga hasilnya berordo $2 \\times 2$:<br>$A \\times B = \\begin{bmatrix} 0(4)+1(1)+2(3) & 0(2)+1(0)+2(-1) \\\\ -2(4)+0(1)+3(3) & -2(2)+0(0)+3(-1) \\end{bmatrix} = \\begin{bmatrix} 7 & -2 \\\\ 1 & -7 \\end{bmatrix}$ (Jawaban: A)"
+            },
+            {
+                id: 3,
+                question: "Jika $P = \\begin{bmatrix} 2 & 0 \\\\ 1 & 3 \\end{bmatrix}$ dan $Q = \\begin{bmatrix} -1 & 1 \\\\ 2 & -3 \\end{bmatrix}$, maka matriks hasil dari $P^2 - PQ - QP + Q^2 = \\dots$",
+                options: [
+                    "$\\begin{bmatrix} 2 & 10 \\\\ 9 & -8 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} 3 & 9 \\\\ -2 & 0 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} 10 & -9 \\\\ -9 & 37 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} 6 & 2 \\\\ 1 & -3 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} 4 & 3 \\\\ 1 & 2 \\end{bmatrix}$"
+                ],
+                answer: 2, // C
+                explanation: "Gunakan sifat distributif matriks: $P^2 - PQ - QP + Q^2 = (P - Q)^2$.<br>$P - Q = \\begin{bmatrix} 2-(-1) & 0-1 \\\\ 1-2 & 3-(-3) \\end{bmatrix} = \\begin{bmatrix} 3 & -1 \\\\ -1 & 6 \\end{bmatrix}$<br>$(P - Q)^2 = \\begin{bmatrix} 3 & -1 \\\\ -1 & 6 \\end{bmatrix}\\begin{bmatrix} 3 & -1 \\\\ -1 & 6 \\end{bmatrix} = \\begin{bmatrix} 9+1 & -3-6 \\\\ -3-6 & 1+36 \\end{bmatrix} = \\begin{bmatrix} 10 & -9 \\\\ -9 & 37 \\end{bmatrix}$ (Jawaban: C)"
+            },
+            {
+                id: 4,
+                question: "Hasil dari $\\begin{bmatrix} 12 & 24 \\\\ 48 & 36 \\end{bmatrix} \\times \\begin{bmatrix} 16 & 32 \\\\ -24 & -16 \\end{bmatrix} = \\dots$",
+                options: [
+                    "$\\begin{bmatrix} 54 & 108 \\\\ 72 & 320 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} -384 & 0 \\\\ -96 & 960 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} 320 & 96 \\\\ 960 & 12 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} 540 & 960 \\\\ 540 & 320 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} 960 & 320 \\\\ 720 & 54 \\end{bmatrix}$"
+                ],
+                answer: 1, // B
+                explanation: "Keluarkan faktor sekutu $12$ dari matriks pertama dan $16$ dari matriks kedua untuk mempermudah hitungan:<br>$12 \\begin{bmatrix} 1 & 2 \\\\ 4 & 3 \\end{bmatrix} \\times 16 \\begin{bmatrix} 1 & 2 \\\\ -1,5 & -1 \\end{bmatrix} = 192 \\begin{bmatrix} 1-3 & 2-2 \\\\ 4-4,5 & 8-3 \\end{bmatrix} = 192 \\begin{bmatrix} -2 & 0 \\\\ -0,5 & 5 \\end{bmatrix} = \\begin{bmatrix} -384 & 0 \\\\ -96 & 960 \\end{bmatrix}$ (Jawaban: B)"
+            },
+            {
+                id: 5,
+                question: "Diketahui $A = \\begin{bmatrix} 3 & -2 \\\\ 1 & 0 \\end{bmatrix}$ dan $B = \\begin{bmatrix} 4 & 1 \\\\ 0 & -2 \\end{bmatrix}$ maka $(A \\times B)^t = \\dots$",
+                options: [
+                    "$\\begin{bmatrix} 12 & 4 \\\\ 7 & 1 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} 10 & 3 \\\\ 5 & 2 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} -5 & -9 \\\\ 8 & -7 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} 10 & 3 \\\\ 2 & 5 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} 3 & 0 \\\\ 5 & 7 \\end{bmatrix}$"
+                ],
+                answer: 0, // A
+                explanation: "Hitung $A \\times B$ terlebih dahulu:<br>$A \\times B = \\begin{bmatrix} 3(4)+(-2)(0) & 3(1)+(-2)(-2) \\\\ 1(4)+0(0) & 1(1)+0(-2) \\end{bmatrix} = \\begin{bmatrix} 12 & 7 \\\\ 4 & 1 \\end{bmatrix}$<br>Transposkan hasilnya (ubah baris menjadi kolom): $(A \\times B)^t = \\begin{bmatrix} 12 & 4 \\\\ 7 & 1 \\end{bmatrix}$ (Jawaban: A)"
+            },
+            {
+                id: 6,
+                question: "Diketahui $A = \\begin{bmatrix} 2 & -3 \\\\ 3 & 1 \\end{bmatrix}$ maka $(A^2)^t = \\dots$",
+                options: [
+                    "$\\begin{bmatrix} -5 & 9 \\\\ -9 & -8 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} 3 & 9 \\\\ -9 & 7 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} -5 & -9 \\\\ 8 & -7 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} 4 & 5 \\\\ 8 & -7 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} 4 & 5 \\\\ -3 & 2 \\end{bmatrix}$"
+                ],
+                answer: 0, // A
+                explanation: "$A^2 = \\begin{bmatrix} 2 & -3 \\\\ 3 & 1 \\end{bmatrix}\\begin{bmatrix} 2 & -3 \\\\ 3 & 1 \\end{bmatrix} = \\begin{bmatrix} 4-9 & -6-3 \\\\ 6+3 & -9+1 \\end{bmatrix} = \\begin{bmatrix} -5 & -9 \\\\ 9 & -8 \\end{bmatrix}$<br>Transposkan hasilnya: $(A^2)^t = \\begin{bmatrix} -5 & 9 \\\\ -9 & -8 \\end{bmatrix}$ (Jawaban: A)"
+            },
+            {
+                id: 7,
+                question: "Diketahui $\\begin{bmatrix} x & -2 \\\\ 3 & y \\end{bmatrix} \\begin{bmatrix} -1 & 6 \\\\ 5 & -y \\end{bmatrix} = \\begin{bmatrix} -11 & 14 \\\\ 17 & 2x \\end{bmatrix}$, maka nilai $x + y = \\dots$",
+                options: [
+                    "5",
+                    "8",
+                    "10",
+                    "12",
+                    "15"
+                ],
+                answer: 0, // A
+                explanation: "Kalikan ruas kiri:<br>$\\begin{bmatrix} -x - 10 & 6x + 2y \\\\ -3 + 5y & 18 - y^2 \\end{bmatrix} = \\begin{bmatrix} -11 & 14 \\\\ 17 & 2x \\end{bmatrix}$<br>Dari elemen baris 1 kolom 1: $-x - 10 = -11 \\Rightarrow x = 1$.<br>Dari elemen baris 2 kolom 1: $-3 + 5y = 17 \\Rightarrow 5y = 20 \\Rightarrow y = 4$.<br>Jadi, $x + y = 1 + 4 = 5$ (Jawaban: A)"
+            },
+            {
+                id: 8,
+                question: "Manakah dari pernyataan berikut ini bernilai salah?",
+                options: [
+                    "$(P + Q)^t = P^t + Q^t$",
+                    "$(P \\times Q)^t \\neq P^t \\times Q^t$",
+                    "$(2P)^t = 2P^t$",
+                    "$(P^2)^t = (P^t)^2$",
+                    "$(P \\times Q)^2 = P^2 \\times Q^2$"
+                ],
+                answer: 4, // E
+                explanation: "Perkalian matriks tidak bersifat komutatif ($PQ \\neq QP$). Oleh karena itu, $(P \\times Q)^2 = (PQ)(PQ) = PQPQ$, yang secara umum tidak sama dengan $P^2 Q^2 = PPQQ$. Jadi pernyataan E bernilai salah."
+            },
+            {
+                id: 9,
+                question: "Manakah dari pernyataan berikut ini bernilai salah?",
+                options: [
+                    "$(A \\times B) \\times C = A \\times (B \\times C)$",
+                    "$2A \\times 3B = 6AB$",
+                    "$A(B + C) = AB + AC$",
+                    "$(A + B)^2 = A^2 + 2AB + B^2$",
+                    "$(A - B)^2 = (A - B)(A - B)$"
+                ],
+                answer: 3, // D
+                explanation: "Karena perkalian matriks tidak bersifat komutatif ($AB \\neq BA$), maka:<br>$(A + B)^2 = (A + B)(A + B) = A^2 + AB + BA + B^2 \\neq A^2 + 2AB + B^2$.<br>Jadi pernyataan D bernilai salah."
+            },
+            {
+                id: 10,
+                question: "Nilai $x$ yang memenuhi persamaan matriks $\\begin{bmatrix} 2 & -3 \\\\ 1 & 4 \\end{bmatrix} \\begin{bmatrix} x \\\\ y \\end{bmatrix} = \\begin{bmatrix} 4 \\\\ 13 \\end{bmatrix}$ adalah...",
+                options: [
+                    "-3",
+                    "2",
+                    "1",
+                    "5",
+                    "6"
+                ],
+                answer: 3, // D
+                explanation: "Diperoleh sistem persamaan linear:<br>1) $2x - 3y = 4$<br>2) $x + 4y = 13 \\Rightarrow x = 13 - 4y$<br>Substitusikan ke (1): $2(13 - 4y) - 3y = 4 \\Rightarrow 26 - 11y = 4 \\Rightarrow 11y = 22 \\Rightarrow y = 2$.<br>Maka $x = 13 - 4(2) = 5$ (Jawaban: D)"
+            },
+            {
+                id: 11,
+                question: "Jika $A = \\begin{bmatrix} 1 & 1 \\\\ -1 & 1 \\end{bmatrix}$ dan $B = \\begin{bmatrix} 0 & 1 \\\\ 1 & 0 \\end{bmatrix}$, maka hasil dari $(A - B)(A + B) - (A + B)(A - B)$ adalah...",
+                options: [
+                    "$\\begin{bmatrix} 3 & 1 \\\\ 1 & -3 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} 0 & 4 \\\\ 4 & 0 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} -2 & 0 \\\\ 0 & 2 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} 0 & 2 \\\\ -2 & 0 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} 4 & 0 \\\\ 0 & -4 \\end{bmatrix}$"
+                ],
+                answer: 4, // E
+                explanation: "Sederhanakan bentuk aljabar matriksnya:<br>$(A^2 + AB - BA - B^2) - (A^2 - AB + BA - B^2) = 2(AB - BA)$<br>$AB = \\begin{bmatrix} 1 & 1 \\\\ 1 & -1 \\end{bmatrix}$ dan $BA = \\begin{bmatrix} -1 & 1 \\\\ 1 & 1 \\end{bmatrix}$<br>$2(AB - BA) = 2\\begin{bmatrix} 2 & 0 \\\\ 0 & -2 \\end{bmatrix} = \\begin{bmatrix} 4 & 0 \\\\ 0 & -4 \\end{bmatrix}$ (Jawaban: E)"
+            },
+            {
+                id: 12,
+                question: "Diketahui $\\begin{bmatrix} 2x & 4 \\\\ 1 & 1 \\end{bmatrix} + \\begin{bmatrix} -6 & 10x \\\\ -7 & 1 \\end{bmatrix} = 2 \\begin{bmatrix} 3 & x \\\\ -1 & 1 \\end{bmatrix} \\begin{bmatrix} 1 & x \\\\ -2 & 3 \\end{bmatrix}$. Nilai $x$ yang memenuhi persamaan di atas adalah...",
+                options: [
+                    "-2",
+                    "2",
+                    "4",
+                    "6",
+                    "8"
+                ],
+                answer: 1, // B
+                explanation: "Sederhanakan kedua ruas:<br>Ruas kiri: $\\begin{bmatrix} 2x - 6 & 4 + 10x \\\\ -6 & 2 \\end{bmatrix}$<br>Ruas kanan: $2 \\begin{bmatrix} 3 - 2x & 3x + 3x \\\\ -1 - 2 & -x + 3 \\end{bmatrix} = \\begin{bmatrix} 6 - 4x & 12x \\\\ -6 & -2x + 6 \\end{bmatrix}$<br>Samakan elemen baris 1 kolom 1: $2x - 6 = 6 - 4x \\Rightarrow 6x = 12 \\Rightarrow x = 2$ (Jawaban: B)"
+            },
+            {
+                id: 13,
+                question: "Diketahui $f(x) = x^2 - 3x$. Jika $A = \\begin{bmatrix} -1 & 2 \\\\ 2 & 3 \\end{bmatrix}$, maka $f(A) = \\dots$",
+                options: [
+                    "$\\begin{bmatrix} 0 & 0 \\\\ 3 & 1 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} 8 & -2 \\\\ -2 & 4 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} 1 & 2 \\\\ 0 & 3 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} 0 & 2 \\\\ -1 & 0 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} 4 & -2 \\\\ 0 & 0 \\end{bmatrix}$"
+                ],
+                answer: 1, // B
+                explanation: "$f(A) = A^2 - 3A$<br>$A^2 = \\begin{bmatrix} -1 & 2 \\\\ 2 & 3 \\end{bmatrix}\\begin{bmatrix} -1 & 2 \\\\ 2 & 3 \\end{bmatrix} = \\begin{bmatrix} 5 & 4 \\\\ 4 & 13 \\end{bmatrix}$<br>$3A = \\begin{bmatrix} -3 & 6 \\\\ 6 & 9 \\end{bmatrix}$<br>$f(A) = \\begin{bmatrix} 5 - (-3) & 4 - 6 \\\\ 4 - 6 & 13 - 9 \\end{bmatrix} = \\begin{bmatrix} 8 & -2 \\\\ -2 & 4 \\end{bmatrix}$ (Jawaban: B)"
+            },
+            {
+                id: 14,
+                question: "Jika matriks $A = \\begin{bmatrix} 1 & -4 \\\\ 2 & 3 \\end{bmatrix}$, $B = \\begin{bmatrix} 3 & 2 \\\\ -1 & 1 \\end{bmatrix}$, dan $C = \\begin{bmatrix} 0 & 2 \\\\ 0 & -3 \\end{bmatrix}$, maka $A \\times B \\times C = \\dots$",
+                options: [
+                    "$\\begin{bmatrix} 27 & 9 \\\\ 15 & 0 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} 16 & 0 \\\\ 0 & -9 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} 0 & 20 \\\\ 0 & -15 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} 0 & 0 \\\\ 16 & 10 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} 0 & 20 \\\\ 15 & 0 \\end{bmatrix}$"
+                ],
+                answer: 2, // C
+                explanation: "Hitung $A \\times B$ terlebih dahulu:<br>$A \\times B = \\begin{bmatrix} 3+4 & 2-4 \\\\ 6-3 & 4+3 \\end{bmatrix} = \\begin{bmatrix} 7 & -2 \\\\ 3 & 7 \\end{bmatrix}$<br>Kalikan hasilnya dengan $C$:<br>$(A \\times B) \\times C = \\begin{bmatrix} 7 & -2 \\\\ 3 & 7 \\end{bmatrix}\\begin{bmatrix} 0 & 2 \\\\ 0 & -3 \\end{bmatrix} = \\begin{bmatrix} 0 & 14+6 \\\\ 0 & 6-21 \\end{bmatrix} = \\begin{bmatrix} 0 & 20 \\\\ 0 & -15 \\end{bmatrix}$ (Jawaban: C)"
+            },
+            {
+                id: 15,
+                question: "Diketahui $\\begin{bmatrix} -1 & d \\\\ 5 & a \\end{bmatrix} + \\begin{bmatrix} -3 & -5 \\\\ -3 & a \\end{bmatrix} = \\begin{bmatrix} 2 & -1 \\\\ 4 & 3 \\end{bmatrix} \\begin{bmatrix} c - 3 & 1 \\\\ b & 2b \\end{bmatrix}$. Nilai $a = \\dots$",
+                options: [
+                    "2",
+                    "3",
+                    "4",
+                    "6",
+                    "8"
+                ],
+                answer: 4, // E
+                explanation: "Ruas kiri: $\\begin{bmatrix} -4 & d-5 \\\\ 2 & 2a \\end{bmatrix}$<br>Ruas kanan: $\\begin{bmatrix} 2c - 6 - b & 2 - 2b \\\\ 4c - 12 + 3b & 4 + 6b \\end{bmatrix}$<br>Dari kolom pertama:<br>1) $2c - 6 - b = -4 \\Rightarrow 2c - b = 2 \\Rightarrow 4c - 2b = 4$<br>2) $4c - 12 + 3b = 2 \\Rightarrow 4c + 3b = 14$<br>Kurangkan (2) dengan (1): $5b = 10 \\Rightarrow b = 2$.<br>Samakan elemen baris 2 kolom 2: $2a = 4 + 6b = 4 + 6(2) = 16 \\Rightarrow a = 8$ (Jawaban: E)"
+            },
+            {
+                id: 16,
+                question: "Dari persamaan matriks $\\begin{pmatrix} p+1 & -2 \\\\ 1 & -1 \\end{pmatrix} \\begin{pmatrix} 3 & p+r \\\\ q & 3 \\end{pmatrix} + \\begin{pmatrix} q & -4 \\\\ p+q & q \\end{pmatrix} = \\begin{pmatrix} 10 & 10 \\\\ 6 & 4 \\end{pmatrix}$, nilai $p + 2q + 2r = \\dots$",
+                options: [
+                    "2",
+                    "3",
+                    "5",
+                    "11",
+                    "23"
+                ],
+                answer: 3, // D
+                explanation: "Sederhanakan ruas kiri:<br>$\\begin{pmatrix} 3p + 3 - 2q + q & (p+1)(p+r) - 6 - 4 \\\\ 3 - q + p + q & p + r - 3 + q \\end{pmatrix} = \\begin{pmatrix} 10 & 10 \\\\ 6 & 4 \\end{pmatrix}$<br>1) Dari elemen (2,1): $3 + p = 6 \\Rightarrow p = 3$.<br>2) Dari elemen (1,1): $3(3) + 3 - q = 10 \\Rightarrow 12 - q = 10 \\Rightarrow q = 2$.<br>3) Dari elemen (2,2): $p + q + r - 3 = 4 \\Rightarrow 3 + 2 + r - 3 = 4 \\Rightarrow r = 2$.<br>Maka $p + 2q + 2r = 3 + 2(2) + 2(2) = 11$ (Jawaban: D)"
+            },
+            {
+                id: 17,
+                question: "Jika $A = \\begin{bmatrix} 3 & 2 \\\\ 0 & 5 \\end{bmatrix}$, $B = \\begin{bmatrix} x & 1 \\\\ y & 1 \\end{bmatrix}$, dan $C = \\begin{bmatrix} 9 & 3 \\\\ 16 & 7 \\end{bmatrix}$ serta berlaku $A^t \\cdot B = C$, maka $2x + y = \\dots$",
+                options: [
+                    "7",
+                    "8",
+                    "9",
+                    "10",
+                    "11"
+                ],
+                answer: 1, // B
+                explanation: "Transpos matriks $A$ adalah $A^t = \\begin{bmatrix} 3 & 0 \\\\ 2 & 5 \\end{bmatrix}$.<br>$A^t \\cdot B = \\begin{bmatrix} 3 & 0 \\\\ 2 & 5 \\end{bmatrix}\\begin{bmatrix} x & 1 \\\\ y & 1 \\end{bmatrix} = \\begin{bmatrix} 3x & 3 \\\\ 2x + 5y & 7 \\end{bmatrix} = \\begin{bmatrix} 9 & 3 \\\\ 16 & 7 \\end{bmatrix}$<br>Dari elemen kolom pertama diperoleh:<br>$3x = 9 \\Rightarrow x = 3$<br>$2x + 5y = 16 \\Rightarrow 2(3) + 5y = 16 \\Rightarrow 5y = 10 \\Rightarrow y = 2$<br>Jadi, $2x + y = 2(3) + 2 = 8$ (Jawaban: B)"
+            },
+            {
+                id: 18,
+                question: "Jika $\\begin{bmatrix} \\sqrt{2} & 2 \\\\ 0 & 2\\sqrt{2} \\end{bmatrix} B = \\begin{bmatrix} -\\sqrt{2} & 2\\sqrt{2} \\\\ 4 & 0 \\end{bmatrix}$, maka matriks $B$ adalah...",
+                options: [
+                    "$\\begin{bmatrix} -3 & 2 \\\\ 0 & 2 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} -3 & 2 \\\\ \\sqrt{2} & 0 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} -\\sqrt{2} & 2 \\\\ \\sqrt{2} & -2 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} -\\sqrt{2} & 2 \\\\ -3 & -2 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} -1 & 2 \\\\ \\sqrt{2} & 3 \\end{bmatrix}$"
+                ],
+                answer: 1, // B
+                explanation: "Misalkan $B = \\begin{bmatrix} a & b \\\\ c & d \\end{bmatrix}$, maka:<br>$\\begin{bmatrix} \\sqrt{2}a + 2c & \\sqrt{2}b + 2d \\\\ 2\\sqrt{2}c & 2\\sqrt{2}d \\end{bmatrix} = \\begin{bmatrix} -\\sqrt{2} & 2\\sqrt{2} \\\\ 4 & 0 \\end{bmatrix}$<br>Dari baris 2: $2\\sqrt{2}c = 4 \\Rightarrow c = \\frac{4}{2\\sqrt{2}} = \\sqrt{2}$ dan $2\\sqrt{2}d = 0 \\Rightarrow d = 0$.<br>Dari baris 1: $\\sqrt{2}a + 2\\sqrt{2} = -\\sqrt{2} \\Rightarrow a = -3$ dan $\\sqrt{2}b + 0 = 2\\sqrt{2} \\Rightarrow b = 2$.<br>Jadi $B = \\begin{bmatrix} -3 & 2 \\\\ \\sqrt{2} & 0 \\end{bmatrix}$ (Jawaban: B)"
+            },
+            {
+                id: 19,
+                question: "Diketahui $\\begin{pmatrix} 4 & a-2 \\\\ 3 & 2 \\end{pmatrix} + \\begin{pmatrix} -6 & 8 \\\\ -11 & -6 \\end{pmatrix} = 2 \\begin{pmatrix} 3 & 1 \\\\ -2 & 4 \\end{pmatrix} \\begin{pmatrix} 0 & 3 \\\\ -1 & 1 \\end{pmatrix}$, maka $a = \\dots$",
+                options: [
+                    "0",
+                    "10",
+                    "13",
+                    "14",
+                    "25"
+                ],
+                answer: 3, // D
+                explanation: "Fokus pada elemen baris 1 kolom 2 kedua ruas:<br>Ruas kiri: $(a - 2) + 8 = a + 6$<br>Ruas kanan: $2 \\times (3(3) + 1(1)) = 2(9 + 1) = 20$<br>Maka $a + 6 = 20 \\Rightarrow a = 14$ (Jawaban: D)"
+            },
+            {
+                id: 20,
+                question: "Diketahui matriks $A = \\begin{pmatrix} 2 & 3 \\\\ 1 & 4 \\end{pmatrix}$ dan $B = \\begin{pmatrix} x & 6 \\\\ y & 8 \\end{pmatrix}$. Jika $AB = BA$, maka nilai $4x - 3y = \\dots$",
+                options: [
+                    "-10",
+                    "-6",
+                    "6",
+                    "10",
+                    "14"
+                ],
+                answer: 3, // D
+                explanation: "Hitung kedua perkalian matriks $AB$ dan $BA$:<br>$AB = \\begin{pmatrix} 2x + 3y & 12 + 24 \\\\ x + 4y & 6 + 32 \\end{pmatrix} = \\begin{pmatrix} 2x + 3y & 36 \\\\ x + 4y & 38 \\end{pmatrix}$<br>$BA = \\begin{pmatrix} 2x + 6 & 3x + 24 \\\\ 2y + 8 & 3y + 32 \\end{pmatrix}$<br>1) Dari elemen baris 2 kolom 2:<br>$3y + 32 = 38 \\Rightarrow 3y = 6 \\Rightarrow y = 2$<br>2) Dari elemen baris 1 kolom 2:<br>$3x + 24 = 36 \\Rightarrow 3x = 12 \\Rightarrow x = 4$<br>3) Cek konsistensi elemen lainnya:<br>$2x + 3y = 14 = 2x + 6$ dan $x + 4y = 12 = 2y + 8$ (Konsisten).<br>Maka nilai $4x - 3y = 4(4) - 3(2) = 16 - 6 = 10$ (Jawaban: D)"
+            },
+            {
+                id: 21,
+                question: "Jika diketahui dua buah matriks $A = \\begin{bmatrix} 1 & 3 \\\\ 4 & -3 \\end{bmatrix}$ dan $B = \\begin{bmatrix} 3 \\\\ 2 \\end{bmatrix}$, maka yang benar di antara hubungan berikut adalah...",
+                options: [
+                    "$BA = 3B$",
+                    "$BA = 3A$",
+                    "$AB = 3B$",
+                    "$AB = 3A$",
+                    "$3AB = B$"
+                ],
+                answer: 2, // C
+                explanation: "Hitung hasil perkalian $A \\times B$:<br>$AB = \\begin{bmatrix} 1 & 3 \\\\ 4 & -3 \\end{bmatrix}\\begin{bmatrix} 3 \\\\ 2 \\end{bmatrix} = \\begin{bmatrix} 1(3) + 3(2) \\\\ 4(3) + (-3)(2) \\end{bmatrix} = \\begin{bmatrix} 9 \\\\ 6 \\end{bmatrix} = 3\\begin{bmatrix} 3 \\\\ 2 \\end{bmatrix} = 3B$ (Jawaban: C)"
+            },
+            {
+                id: 22,
+                question: "Jika $I$ matriks satuan berordo $2 \\times 2$ dan $A = \\begin{pmatrix} 2 & 1 \\\\ -4 & 3 \\end{pmatrix}$ sehingga $A^2 = pA + qI$, maka nilai $p + q = \\dots$",
+                options: [
+                    "15",
+                    "10",
+                    "5",
+                    "-5",
+                    "-10"
+                ],
+                answer: 3, // D
+                explanation: "Hitung $A^2$ dan ruas kanan $pA + qI$:<br>$A^2 = \\begin{pmatrix} 2 & 1 \\\\ -4 & 3 \\end{pmatrix}\\begin{pmatrix} 2 & 1 \\\\ -4 & 3 \\end{pmatrix} = \\begin{pmatrix} 4-4 & 2+3 \\\\ -8-12 & -4+9 \\end{pmatrix} = \\begin{pmatrix} 0 & 5 \\\\ -20 & 5 \\end{pmatrix}$<br>$pA + qI = \\begin{pmatrix} 2p+q & p \\\\ -4p & 3p+q \\end{pmatrix}$<br>Dari elemen baris 1 kolom 2 diperoleh $p = 5$.<br>Substitusikan $p = 5$ ke elemen baris 1 kolom 1: $2(5) + q = 0 \\Rightarrow q = -10$.<br>Jadi, $p + q = 5 + (-10) = -5$ (Jawaban: D)"
+            },
+            {
+                id: 23,
+                question: "Diketahui matriks $A$ berordo $2 \\times 3$, matriks $B$ berordo $3 \\times 4$, dan matriks $C$ berordo $4 \\times 2$. Ordo matriks hasil operasi $(A \\times B \\times C)^t$ adalah...",
+                options: [
+                    "$2 \\times 2$",
+                    "$2 \\times 3$",
+                    "$3 \\times 2$",
+                    "$2 \\times 4$",
+                    "$4 \\times 2$"
+                ],
+                answer: 0, // A
+                explanation: "Gunakan aturan ordo perkalian matriks:<br>$A_{2 \\times 3} \\times B_{3 \\times 4} = (AB)_{2 \\times 4}$<br>$(AB)_{2 \\times 4} \\times C_{4 \\times 2} = (ABC)_{2 \\times 2}$<br>Karena matriks hasil berordo $2 \\times 2$, maka transposnya $(A \\times B \\times C)^t$ tetap berordo $2 \\times 2$ (Jawaban: A)"
+            },
+            {
+                id: 24,
+                question: "Diketahui matriks $P = \\begin{bmatrix} 1 & 2 \\\\ 3 & 4 \\end{bmatrix}$ dan $Q = \\begin{bmatrix} -1 & 0 \\\\ 2 & 1 \\end{bmatrix}$. Nilai determinan dari matriks $P \\times Q$ adalah...",
+                options: [
+                    "-4",
+                    "-2",
+                    "2",
+                    "4",
+                    "6"
+                ],
+                answer: 2, // C
+                explanation: "Hitung terlebih dahulu hasil perkalian $P \\times Q$:<br>$P \\times Q = \\begin{bmatrix} 1(-1) + 2(2) & 1(0) + 2(1) \\\\ 3(-1) + 4(2) & 3(0) + 4(1) \\end{bmatrix} = \\begin{bmatrix} 3 & 2 \\\\ 5 & 4 \\end{bmatrix}$<br>Kemudian hitung determinannya:<br>$\\det(P \\times Q) = (3 \\times 4) - (2 \\times 5) = 12 - 10 = 2$ (Jawaban: C)"
+            },
+            {
+                id: 25,
+                question: "Jika $A = \\begin{bmatrix} 2 & -1 \\\\ 5 & -2 \\end{bmatrix}$, maka matriks $A^{2026}$ adalah...",
+                options: [
+                    "$\\begin{bmatrix} -1 & 0 \\\\ 0 & -1 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} 2 & -1 \\\\ 5 & -2 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} -2 & 1 \\\\ -5 & 2 \\end{bmatrix}$",
+                    "$\\begin{bmatrix} 0 & 1 \\\\ 1 & 0 \\end{bmatrix}$"
+                ],
+                answer: 0, // A
+                explanation: "Cari pola perpangkatan dari matriks $A$:<br>$A^2 = \\begin{bmatrix} 2 & -1 \\\\ 5 & -2 \\end{bmatrix}\\begin{bmatrix} 2 & -1 \\\\ 5 & -2 \\end{bmatrix} = \\begin{bmatrix} 4-5 & -2+2 \\\\ 10-10 & -5+4 \\end{bmatrix} = \\begin{bmatrix} -1 & 0 \\\\ 0 & -1 \\end{bmatrix} = -I$<br>Gunakan sifat eksponen pada pangkat genap $2026 = 2 \\times 1013$:<br>$A^{2026} = (A^2)^{1013} = (-I)^{1013} = -I = \\begin{bmatrix} -1 & 0 \\\\ 0 & -1 \\end{bmatrix}$ (Jawaban: A)"
+            }
+        ];
+
+        // State Aplikasi
+        let currentQuestion = 0;
+        let userAnswers = new Array(questions.length).fill(null);
+        const STORAGE_KEY = 'kuis_matriks_state_v3';
+
+        function loadState() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (Array.isArray(parsed.userAnswers) && parsed.userAnswers.length === questions.length) {
+                        userAnswers = parsed.userAnswers;
+                    }
+                    if (typeof parsed.currentQuestion === 'number' && parsed.currentQuestion >= 0 && parsed.currentQuestion < questions.length) {
+                        currentQuestion = parsed.currentQuestion;
+                    }
+                }
+            } catch (e) {
+                console.error('Gagal memuat state:', e);
+            }
+        }
+
+        function saveState() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                    currentQuestion,
+                    userAnswers
+                }));
+            } catch (e) {
+                console.error('Gagal menyimpan state:', e);
+            }
+        }
+
+        function renderMath() {
+            if (typeof renderMathInElement === 'function') {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        { left: '$$', right: '$$', display: true },
+                        { left: '$', right: '$', display: false }
+                    ],
+                    throwOnError: false
+                });
+            }
+        }
+
+        function updateScore() {
+            let score = 0;
+            userAnswers.forEach((ans, idx) => {
+                if (ans !== null && ans === questions[idx].answer) {
+                    score++;
+                }
+            });
+            document.getElementById('scoreDisplay').textContent = `${score} / ${questions.length}`;
+        }
+
+        function renderNavGrid() {
+            const navGrid = document.getElementById('navGrid');
+            navGrid.innerHTML = '';
+            questions.forEach((q, idx) => {
+                const btn = document.createElement('button');
+                btn.textContent = String(q.id).padStart(2, '0');
+                const ans = userAnswers[idx];
+                const isActive = idx === currentQuestion;
+
+                let baseClass = 'py-2 rounded-xl text-xs font-bold transition border ';
+                if (ans === null) {
+                    baseClass += isActive
+                        ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
+                        : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100';
+                } else if (ans === q.answer) {
+                    baseClass += isActive
+                        ? 'bg-emerald-600 text-white border-emerald-700 ring-2 ring-emerald-300'
+                        : 'bg-emerald-500 text-white border-emerald-500 hover:bg-emerald-600';
+                } else {
+                    baseClass += isActive
+                        ? 'bg-rose-600 text-white border-rose-700 ring-2 ring-rose-300'
+                        : 'bg-rose-500 text-white border-rose-500 hover:bg-rose-600';
+                }
+
+                btn.className = baseClass;
+                btn.onclick = () => {
+                    currentQuestion = idx;
+                    saveState();
+                    loadQuestion();
+                };
+                navGrid.appendChild(btn);
+            });
+        }
+
+        function loadQuestion() {
+            const q = questions[currentQuestion];
+            const userAns = userAnswers[currentQuestion];
+            const letters = ['A', 'B', 'C', 'D', 'E'];
+
+            document.getElementById('questionCounter').textContent = `Soal ${q.id} dari ${questions.length}`;
+            document.getElementById('questionText').innerHTML = q.question;
+
+            const statusBadge = document.getElementById('statusBadge');
+            const feedbackBox = document.getElementById('feedbackBox');
+            const explanationBox = document.getElementById('explanationBox');
+            const explanationText = document.getElementById('explanationText');
+
+            if (userAns === null) {
+                statusBadge.textContent = 'Belum Dijawab';
+                statusBadge.className = 'text-xs px-3 py-1 rounded-full font-semibold bg-slate-100 text-slate-600';
+                feedbackBox.classList.add('hidden');
+                explanationBox.classList.add('hidden');
+            } else {
+                const isCorrect = userAns === q.answer;
+                statusBadge.textContent = isCorrect ? 'Benar' : 'Salah';
+                statusBadge.className = isCorrect
+                    ? 'text-xs px-3 py-1 rounded-full font-semibold bg-emerald-100 text-emerald-700'
+                    : 'text-xs px-3 py-1 rounded-full font-semibold bg-rose-100 text-rose-700';
+
+                feedbackBox.textContent = isCorrect
+                    ? 'Jawaban Anda Benar!'
+                    : `Kurang Tepat. Kunci Jawaban: ${letters[q.answer]}`;
+                feedbackBox.className = isCorrect
+                    ? 'text-sm font-semibold px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200'
+                    : 'text-sm font-semibold px-3 py-1.5 rounded-lg bg-rose-50 text-rose-700 border border-rose-200';
+
+                explanationText.innerHTML = q.explanation;
+                explanationBox.classList.remove('hidden');
+            }
+
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                let btnClass = 'w-full text-left p-4 rounded-xl border transition flex items-center gap-4 math-wrap ';
+                let badgeClass = 'w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm shrink-0 ';
+
+                if (userAns === null) {
+                    btnClass += 'bg-white hover:bg-indigo-50/50 border-slate-200 hover:border-indigo-300 text-slate-800 cursor-pointer';
+                    badgeClass += 'bg-slate-100 text-slate-700';
+                } else {
+                    btn.disabled = true;
+                    if (idx === q.answer) {
+                        btnClass += 'bg-emerald-50/80 border-emerald-400 text-emerald-950 font-medium';
+                        badgeClass += 'bg-emerald-600 text-white';
+                    } else if (idx === userAns) {
+                        btnClass += 'bg-rose-50/80 border-rose-400 text-rose-950';
+                        badgeClass += 'bg-rose-600 text-white';
+                    } else {
+                        btnClass += 'bg-slate-50/60 border-slate-200 text-slate-400';
+                        badgeClass += 'bg-slate-100 text-slate-400';
+                    }
+                }
+
+                btn.className = btnClass;
+                btn.innerHTML = `
+                    <span class="${badgeClass}">${letters[idx]}</span>
+                    <span class="text-sm sm:text-base">${opt}</span>
+                `;
+
+                if (userAns === null) {
+                    btn.onclick = () => selectAnswer(idx);
+                }
+                optionsContainer.appendChild(btn);
+            });
+
+            document.getElementById('prevBtn').disabled = currentQuestion === 0;
+            document.getElementById('nextBtn').disabled = currentQuestion === questions.length - 1;
+
+            updateScore();
+            renderNavGrid();
+            renderMath();
+        }
+
+        function selectAnswer(optionIdx) {
+            if (userAnswers[currentQuestion] !== null) return;
+            userAnswers[currentQuestion] = optionIdx;
+            saveState();
+            loadQuestion();
+        }
+
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                saveState();
+                loadQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                saveState();
+                loadQuestion();
+            }
+        }
+
+        function openResetModal() {
+            const modal = document.getElementById('resetModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeResetModal() {
+            const modal = document.getElementById('resetModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function confirmResetQuiz() {
+            userAnswers = new Array(questions.length).fill(null);
+            currentQuestion = 0;
+            localStorage.removeItem(STORAGE_KEY);
+            closeResetModal();
+            loadQuestion();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadState();
+            loadQuestion();
+        });
+    </script>
+</body>
+</html>
