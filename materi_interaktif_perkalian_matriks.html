@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Materi Interaktif Perkalian Matriks</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Plus Jakarta Sans & Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+    <!-- KaTeX CSS & JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderAllMath();"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        h1, h2, h3, .font-heading {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .fade-in {
+            animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Custom Matrix Bracket Styling */
+        .matrix-bracket {
+            position: relative;
+            display: inline-flex;
+            padding: 6px 12px;
+        }
+        .matrix-bracket::before, .matrix-bracket::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 8px;
+            border: 2px solid #4f46e5;
+        }
+        .matrix-bracket::before {
+            left: 0;
+            border-right: none;
+            border-radius: 6px 0 0 6px;
+        }
+        .matrix-bracket::after {
+            right: 0;
+            border-left: none;
+            border-radius: 0 6px 6px 0;
+        }
+        /* Hide scrollbars on nav */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col selection:bg-indigo-100 selection:text-indigo-900">
+
+    <!-- Top Glassmorphic Header -->
+    <header class="sticky top-0 z-50 bg-white/85 backdrop-blur-md border-b border-slate-200/80 shadow-sm">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 py-4">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center text-white shadow-md shadow-indigo-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-indigo-600">Matematika SMA</span>
+                        <h1 class="text-lg sm:text-xl font-extrabold text-slate-900 leading-tight">Perkalian Matriks</h1>
+                    </div>
+                </div>
+
+                <!-- Navigation Pills -->
+                <nav class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 md:pb-0">
+                    <button onclick="switchTab('tujuan', this)" class="nav-btn active-nav px-3.5 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all bg-indigo-600 text-white shadow-sm shadow-indigo-200">
+                        1. Tujuan
+                    </button>
+                    <button onclick="switchTab('warmup', this)" class="nav-btn px-3.5 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all text-slate-600 hover:bg-slate-100">
+                        2. Warm-Up
+                    </button>
+                    <button onclick="switchTab('penerapan', this)" class="nav-btn px-3.5 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all text-slate-600 hover:bg-slate-100">
+                        3. Penerapan
+                    </button>
+                    <button onclick="switchTab('materi', this)" class="nav-btn px-3.5 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all text-slate-600 hover:bg-slate-100">
+                        4. Materi
+                    </button>
+                    <button onclick="switchTab('contoh', this)" class="nav-btn px-3.5 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all text-slate-600 hover:bg-slate-100">
+                        5. Contoh Soal
+                    </button>
+                    <button onclick="switchTab('kalkulator', this)" class="nav-btn px-3.5 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all text-slate-600 hover:bg-slate-100">
+                        6. Simulasi
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-5xl w-full mx-auto px-4 sm:px-6 py-8">
+
+        <!-- 1. TUJUAN PEMBELAJARAN -->
+        <section id="tujuan" class="tab-content fade-in">
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200/80 overflow-hidden">
+                <div class="bg-gradient-to-r from-indigo-600 via-indigo-700 to-violet-700 p-6 sm:p-10 text-white">
+                    <span class="inline-block px-3 py-1 rounded-full bg-white/15 text-xs font-semibold tracking-wide uppercase mb-3">Langkah Awal</span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold mb-2">Tujuan Pembelajaran</h2>
+                    <p class="text-indigo-100 max-w-2xl text-sm sm:text-base leading-relaxed">
+                        Pahami target kompetensi yang akan kita kuasai bersama dalam modul interaktif perkalian matriks ini.
+                    </p>
+                </div>
+                <div class="p-6 sm:p-10">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="flex items-start gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100 hover:border-indigo-200 transition">
+                            <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center shrink-0 mt-0.5">1</div>
+                            <p class="text-slate-700 text-sm sm:text-base leading-relaxed">Mengingat kembali konsep dasar operasi penjumlahan dan pengurangan matriks sebagai fondasi utama.</p>
+                        </div>
+                        <div class="flex items-start gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100 hover:border-indigo-200 transition">
+                            <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center shrink-0 mt-0.5">2</div>
+                            <p class="text-slate-700 text-sm sm:text-base leading-relaxed">Menganalisis syarat perkalian dua buah matriks berdasarkan kesesuaian jumlah kolom dan baris.</p>
+                        </div>
+                        <div class="flex items-start gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100 hover:border-indigo-200 transition">
+                            <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center shrink-0 mt-0.5">3</div>
+                            <p class="text-slate-700 text-sm sm:text-base leading-relaxed">Menerapkan operasi perkalian matriks untuk menyelesaikan permasalahan nyata dalam kehidupan sehari-hari.</p>
+                        </div>
+                        <div class="flex items-start gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100 hover:border-indigo-200 transition">
+                            <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center shrink-0 mt-0.5">4</div>
+                            <p class="text-slate-700 text-sm sm:text-base leading-relaxed">Menggunakan sifat-sifat perkalian matriks dalam menyederhanakan dan menyelesaikan persamaan aljabar matriks.</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 flex justify-end">
+                        <button onclick="triggerTab('warmup')" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-xl shadow-md shadow-indigo-200 transition">
+                            Mulai Warm-Up
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. WARM-UP (6 SOAL PENJUMLAHAN & PENGURANGAN MATRIKS) -->
+        <section id="warmup" class="tab-content hidden fade-in">
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200/80 p-6 sm:p-10">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100 mb-6">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-amber-600">Pemanasan Otak</span>
+                        <h2 class="text-2xl font-extrabold text-slate-900 mt-1">Warm-Up: Penjumlahan & Pengurangan Matriks</h2>
+                        <p class="text-slate-500 text-sm mt-1">Isi langsung setiap elemen pada kotak matriks jawaban di bawah ini.</p>
+                    </div>
+                    <div id="score-badge" class="px-4 py-2 rounded-2xl bg-indigo-50 border border-indigo-100 text-indigo-700 font-bold text-sm self-start sm:self-center">
+                        Skor: <span id="warmup-score">0</span> / 6
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Soal 1 -->
+                    <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-xs font-bold text-slate-600">Soal 1</span>
+                                <span id="status-1" class="text-xs font-bold"></span>
+                            </div>
+                            <p class="text-slate-700 text-sm mb-4">Hitunglah hasil penjumlahan matriks berikut:</p>
+                            <div class="flex flex-wrap items-center justify-center gap-3 my-3">
+                                <span>$\begin{bmatrix} 2 & 4 \\ 1 & 3 \end{bmatrix} + \begin{bmatrix} 5 & 2 \\ 3 & 6 \end{bmatrix} =$</span>
+                                <div class="matrix-bracket">
+                                    <div class="grid grid-cols-2 gap-1.5">
+                                        <input type="number" data-q="1" data-ans="7" class="w-12 h-10 text-center font-semibold bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                                        <input type="number" data-q="1" data-ans="6" class="w-12 h-10 text-center font-semibold bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                                        <input type="number" data-q="1" data-ans="4" class="w-12 h-10 text-center font-semibold bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                                        <input type="number" data-q="1" data-ans="9" class="w-12 h-10 text-center font-semibold bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="checkMatrixGrid(1)" class="mt-4 w-full py-2.5 rounded-xl bg-white hover:bg-indigo-600 text-indigo-600 hover:text-white border border-indigo-200 font-semibold text-sm transition">
+                            Periksa Jawaban
+                        </button>
+                    </div>
+
+                    <!-- Soal 2 -->
+                    <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-xs font-bold text-slate-600">Soal 2</span>
+                                <span id="status-2" class="text-xs font-bold"></span>
+                            </div>
+                            <p class="text-slate-700 text-sm mb-4">Hitunglah hasil pengurangan matriks berikut:</p>
+                            <div class="flex flex-wrap items-center justify-center gap-3 my-3">
+                                <span>$\begin{bmatrix} 8 & 5 \\ 3 & 7 \end{bmatrix} - \begin{bmatrix} 2 & 1 \\ 4 & 2 \end{bmatrix} =$</span>
+                                <div class="matrix-bracket">
+                                    <div class="grid grid-cols-2 gap-1.5">
+                                        <input type="number" data-q="2" data-ans="6" class="w-12 h-10 text-center font-semibold bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                                        <input type="number" data-q="2" data-ans="4" class="w-12 h-10 text-center font-semibold bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                                        <input type="number" data-q="2" data-ans="-1" class="w-12 h-10 text-center font-semibold bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                                        <input type="number" data-q="2" data-ans="5" class="w-12 h-10 text-center font-semibold bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="checkMatrixGrid(2)" class="mt-4 w-full py-2.5 rounded-xl bg-white hover:bg-indigo-600 text-indigo-600 hover:text-white border border-indigo-200 font-semibold text-sm transition">
+                            Periksa Jawaban
+                        </button>
+                    </div>
+
+                    <!-- Soal 3 -->
+                    <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-xs font-bold text-slate-600">Soal 3</span>
+                                <span id="status-3" class="text-xs font-bold"></span>
+                            </div>
+                            <p class="text-slate-700 text-sm mb-4">Hitunglah penjumlahan dengan bilangan negatif:</p>
+                            <div class="flex flex-wrap items-center justify-center gap-3 my-3">
+                                <span>$\begin{bmatrix} -3 & 5 \\ 2 & -1 \end{bmatrix} + \begin{bmatrix} 4 & -2 \\ -5 & 6 \end{bmatrix} =$</span>
+                                <div class="matrix-bracket">
+                                    <div class="grid grid-cols-2 gap-1.5">
+                                        <input type="number" data-q="3" data-ans="1" class="w-12 h-10 text-center font-semibold bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                                        <input type="number" data-q="3" data-ans="3" class="w-12 h-10 text-center font-semibold bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                                        <input type="number" data-q="3" data-ans="-3" class="w-12 h-10 text-center font-semibold bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                                        <input type="number" data-q="3" data-ans="5" class="w-12 h-10 text-center font-semibold bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="checkMatrixGrid(3)" class="mt-4 w-full py-2.5 rounded-xl bg-white hover:bg-indigo-600 text-indigo-600 hover:text-white border border-indigo-200 font-semibold text-sm transition">
+                            Periksa Jawaban
+                        </button>
+                    </div>
+
+                    <!-- Soal 4 -->
+                    <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-xs font-bold text-slate-600">Soal 4</span>
+                                <span id="status-4" class="text-xs font-bold"></span>
+                            </div>
+                            <p class="text-slate-700 text-sm mb-4">Hitunglah pengurangan matriks baris berikut:</p>
+                            <div class="flex flex-wrap items-center justify-center gap-3 my-5">
+                                <span>$\begin{bmatrix} 10 & 7 & 5 \end{bmatrix} - \begin{bmatrix} 3 & 2 & 1 \end{bmatrix} =$</span>
+                                <div class="matrix-bracket">
+                                    <div class="grid grid-cols-3 gap-1.5">
+                                        <input type="number" data-q="4" data-ans="7" class="w-12 h-10 text-center font-semibold bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                                        <input type="number" data-q="4" data-ans="5" class="w-12 h-10 text-center font-semibold bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                                        <input type="number" data-q="4" data-ans="4" class="w-12 h-10 text-center font-semibold bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="checkMatrixGrid(4)" class="mt-4 w-full py-2.5 rounded-xl bg-white hover:bg-indigo-600 text-indigo-600 hover:text-white border border-indigo-200 font-semibold text-sm transition">
+                            Periksa Jawaban
+                        </button>
+                    </div>
+
+                    <!-- Soal 5 -->
+                    <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-xs font-bold text-slate-600">Soal 5</span>
+                                <span id="status-5" class="text-xs font-bold"></span>
+                            </div>
+                            <p class="text-slate-700 text-sm mb-4">Hitunglah penjumlahan matriks ordo $3 \times 2$:</p>
+                            <div class="flex flex-wrap items-center justify-center gap-3 my-2">
+                                <span>$\begin{bmatrix} 6 & -3 \\ 2 & 4 \\ 1 & 5 \end{bmatrix} + \begin{bmatrix} -2 & 5 \\ 3 & -1 \\ 4 & 2 \end{bmatrix} =$</span>
+                                <div class="matrix-bracket">
+                                    <div class="grid grid-cols-2 gap-1.5">
+                                        <input type="number" data-q="5" data-ans="4" class="w-11 h-9 text-center font-semibold bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                                        <input type="number" data-q="5" data-ans="2" class="w-11 h-9 text-center font-semibold bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                                        <input type="number" data-q="5" data-ans="5" class="w-11 h-9 text-center font-semibold bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                                        <input type="number" data-q="5" data-ans="3" class="w-11 h-9 text-center font-semibold bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                                        <input type="number" data-q="5" data-ans="5" class="w-11 h-9 text-center font-semibold bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                                        <input type="number" data-q="5" data-ans="7" class="w-11 h-9 text-center font-semibold bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="checkMatrixGrid(5)" class="mt-4 w-full py-2.5 rounded-xl bg-white hover:bg-indigo-600 text-indigo-600 hover:text-white border border-indigo-200 font-semibold text-sm transition">
+                            Periksa Jawaban
+                        </button>
+                    </div>
+
+                    <!-- Soal 6 -->
+                    <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-xs font-bold text-slate-600">Soal 6</span>
+                                <span id="status-6" class="text-xs font-bold"></span>
+                            </div>
+                            <p class="text-slate-700 text-sm mb-4">Hitunglah pengurangan matriks persegi berikut:</p>
+                            <div class="flex flex-wrap items-center justify-center gap-3 my-3">
+                                <span>$\begin{bmatrix} 9 & 3 \\ 4 & 8 \end{bmatrix} - \begin{bmatrix} 2 & 1 \\ 3 & 4 \end{bmatrix} =$</span>
+                                <div class="matrix-bracket">
+                                    <div class="grid grid-cols-2 gap-1.5">
+                                        <input type="number" data-q="6" data-ans="7" class="w-12 h-10 text-center font-semibold bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                                        <input type="number" data-q="6" data-ans="2" class="w-12 h-10 text-center font-semibold bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                                        <input type="number" data-q="6" data-ans="1" class="w-12 h-10 text-center font-semibold bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                                        <input type="number" data-q="6" data-ans="4" class="w-12 h-10 text-center font-semibold bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="checkMatrixGrid(6)" class="mt-4 w-full py-2.5 rounded-xl bg-white hover:bg-indigo-600 text-indigo-600 hover:text-white border border-indigo-200 font-semibold text-sm transition">
+                            Periksa Jawaban
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. PENERAPAN NYATA -->
+        <section id="penerapan" class="tab-content hidden fade-in">
+            <div class="space-y-6">
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200/80 p-6 sm:p-10">
+                    <span class="text-xs font-bold uppercase tracking-wider text-emerald-600">Konteks Kehidupan</span>
+                    <h2 class="text-2xl font-extrabold text-slate-900 mt-1 mb-2">Penerapan Nyata Perkalian Matriks</h2>
+                    <p class="text-slate-600 text-sm sm:text-base mb-8">Bagaimana tabel data sehari-hari diubah menjadi perkalian matriks yang efektif.</p>
+
+                    <!-- Kasus 1 -->
+                    <div class="p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-slate-50 to-indigo-50/40 border border-indigo-100 mb-6">
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="px-3 py-1 rounded-lg bg-indigo-600 text-white text-xs font-bold">Studi Kasus 1</span>
+                            <h3 class="text-lg font-bold text-slate-900">Rekapitulasi Bobot Pelanggaran Kursus</h3>
+                        </div>
+                        <p class="text-slate-700 text-sm sm:text-base leading-relaxed mb-5">
+                            Terdapat catatan ketidakhadiran dua siswa pada kursus Bahasa Inggris berdasarkan kategori Sakit ($S$), Izin ($I$), dan Tanpa Keterangan ($TK$), beserta tabel bobot pelanggaran masing-masing:
+                        </p>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                            <!-- Tabel 1 -->
+                            <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-xs">
+                                <div class="bg-slate-100 px-4 py-2 text-xs font-bold text-slate-600 uppercase">Tabel Ketidakhadiran</div>
+                                <table class="w-full text-sm text-left">
+                                    <thead class="border-b border-slate-200 bg-slate-50/50">
+                                        <tr>
+                                            <th class="px-4 py-2.5 font-semibold">Siswa</th>
+                                            <th class="px-4 py-2.5 text-center font-semibold">S</th>
+                                            <th class="px-4 py-2.5 text-center font-semibold">I</th>
+                                            <th class="px-4 py-2.5 text-center font-semibold">TK</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100">
+                                        <tr>
+                                            <td class="px-4 py-2.5 font-medium">Amir</td>
+                                            <td class="px-4 py-2.5 text-center">2</td>
+                                            <td class="px-4 py-2.5 text-center">1</td>
+                                            <td class="px-4 py-2.5 text-center">3</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2.5 font-medium">Budi</td>
+                                            <td class="px-4 py-2.5 text-center">4</td>
+                                            <td class="px-4 py-2.5 text-center">3</td>
+                                            <td class="px-4 py-2.5 text-center">2</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Tabel 2 -->
+                            <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-xs">
+                                <div class="bg-slate-100 px-4 py-2 text-xs font-bold text-slate-600 uppercase">Tabel Bobot Pelanggaran</div>
+                                <table class="w-full text-sm text-left">
+                                    <thead class="border-b border-slate-200 bg-slate-50/50">
+                                        <tr>
+                                            <th class="px-4 py-2.5 font-semibold">Alasan Ketidakhadiran</th>
+                                            <th class="px-4 py-2.5 text-center font-semibold">Bobot</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100">
+                                        <tr>
+                                            <td class="px-4 py-2">Sakit (S)</td>
+                                            <td class="px-4 py-2 text-center font-semibold text-indigo-600">1</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2">Izin (I)</td>
+                                            <td class="px-4 py-2 text-center font-semibold text-indigo-600">2</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-2">Tanpa Keterangan (TK)</td>
+                                            <td class="px-4 py-2 text-center font-semibold text-indigo-600">3</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Proses Matriks -->
+                        <div class="bg-white p-5 rounded-xl border border-indigo-100 overflow-x-auto">
+                            <p class="text-xs font-bold uppercase tracking-wider text-indigo-600 mb-3">Penyelesaian dengan Perkalian Matriks</p>
+                            <div class="text-sm sm:text-base space-y-3">
+                                <p>Misalkan matriks kehadiran $A = \begin{bmatrix} 2 & 1 & 3 \\ 4 & 3 & 2 \end{bmatrix}$ dan matriks bobot $B = \begin{bmatrix} 1 \\ 2 \\ 3 \end{bmatrix}$, maka:</p>
+                                <div class="py-2">
+                                    $$A \times B = \begin{bmatrix} 2 & 1 & 3 \\ 4 & 3 & 2 \end{bmatrix} \begin{bmatrix} 1 \\ 2 \\ 3 \end{bmatrix} = \begin{bmatrix} 2(1) + 1(2) + 3(3) \\ 4(1) + 3(2) + 2(3) \end{bmatrix} = \begin{bmatrix} 13 \\ 16 \end{bmatrix}$$
+                                </div>
+                                <p class="text-slate-600 text-sm">Jadi, total bobot pelanggaran <strong>Amir adalah 13</strong> dan <strong>Budi adalah 16</strong>.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Kasus 2 -->
+                    <div class="p-6 sm:p-8 rounded-2xl bg-slate-50 border border-slate-200/80">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="px-3 py-1 rounded-lg bg-slate-800 text-white text-xs font-bold">Studi Kasus 2</span>
+                            <h3 class="text-lg font-bold text-slate-900">Estimasi Biaya Produksi Roti</h3>
+                        </div>
+                        <p class="text-slate-700 text-sm sm:text-base leading-relaxed">
+                            Dalam industri kuliner maupun manufaktur, matriks kebutuhan bahan baku (Tepung dan Mentega) untuk berbagai varian roti dikalikan dengan matriks harga pasar bahan baku pada bulan Januari dan Februari. Perkalian matriks menghasilkan rincian biaya produksi per jenis roti secara langsung tanpa perlu menghitung satu per satu secara manual.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. MATERI LENGKAP & SIFAT -->
+        <section id="materi" class="tab-content hidden fade-in">
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200/80 p-6 sm:p-10 space-y-8">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-indigo-600">Konsep Utama</span>
+                    <h2 class="text-2xl font-extrabold text-slate-900 mt-1">Syarat & Aturan Perkalian Matriks</h2>
+                </div>
+
+                <!-- Visual Formula Card -->
+                <div class="p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-indigo-900 to-slate-900 text-white shadow-lg">
+                    <p class="text-indigo-200 text-sm mb-4 text-center">
+                        Matriks $A$ dapat dikalikan dengan matriks $B$ jika dan hanya jika <strong>jumlah kolom matriks $A$ sama dengan jumlah baris matriks $B$</strong>.
+                    </p>
+                    <div class="text-center text-xl sm:text-2xl py-4 bg-white/10 rounded-xl backdrop-blur-xs border border-white/10">
+                        $$A_{p \times \color{#fbbf24}{n}} \times B_{\color{#fbbf24}{n} \times q} = C_{p \times q}$$
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-5 text-xs sm:text-sm text-indigo-100">
+                        <div class="flex items-center gap-2 bg-white/5 p-3 rounded-xl">
+                            <span class="w-2.5 h-2.5 rounded-full bg-amber-400 shrink-0"></span>
+                            <span>Angka tengah ($n$) harus bernilai sama agar perkalian terdefinisi.</span>
+                        </div>
+                        <div class="flex items-center gap-2 bg-white/5 p-3 rounded-xl">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 shrink-0"></span>
+                            <span>Ordo matriks hasil kali ($C$) adalah $p \times q$ (baris kiri $\times$ kolom kanan).</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sifat-Sifat Perkalian Matriks -->
+                <div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-4">Sifat-Sifat Operasi Perkalian Matriks</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="p-5 rounded-2xl bg-rose-50/70 border border-rose-100">
+                            <span class="text-xs font-bold text-rose-600 uppercase">1. Tidak Komutatif</span>
+                            <p class="text-lg font-semibold text-slate-800 my-1">$A \times B \neq B \times A$</p>
+                            <p class="text-xs text-slate-600">Urutan perkalian matriks sangat menentukan hasil (secara umum tidak dapat ditukar).</p>
+                        </div>
+
+                        <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                            <span class="text-xs font-bold text-indigo-600 uppercase">2. Sifat Asosiatif</span>
+                            <p class="text-lg font-semibold text-slate-800 my-1">$(A \times B) \times C = A \times (B \times C)$</p>
+                            <p class="text-xs text-slate-600">Pengelompokan perkalian tiga matriks dapat dilakukan dari depan maupun belakang.</p>
+                        </div>
+
+                        <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                            <span class="text-xs font-bold text-indigo-600 uppercase">3. Sifat Distributif</span>
+                            <p class="text-lg font-semibold text-slate-800 my-1">$A(B + C) = AB + AC$</p>
+                            <p class="text-xs text-slate-600">Berlaku pula distributif kanan: $(A + B)C = AC + BC$.</p>
+                        </div>
+
+                        <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                            <span class="text-xs font-bold text-indigo-600 uppercase">4. Perkalian Skalar</span>
+                            <p class="text-lg font-semibold text-slate-800 my-1">$(pA)(qB) = (pq)(AB)$</p>
+                            <p class="text-xs text-slate-600">Dengan $p$ dan $q$ adalah bilangan real (skalar).</p>
+                        </div>
+
+                        <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                            <span class="text-xs font-bold text-indigo-600 uppercase">5. Sifat Transpose</span>
+                            <p class="text-lg font-semibold text-slate-800 my-1">$(A \times B)^t = B^t \times A^t$</p>
+                            <p class="text-xs text-slate-600">Urutan matriks dibalik ketika ditransposekan bersama.</p>
+                        </div>
+
+                        <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                            <span class="text-xs font-bold text-indigo-600 uppercase">6. Perpangkatan Matriks Persegi</span>
+                            <p class="text-lg font-semibold text-slate-800 my-1">$A^2 = A \times A$</p>
+                            <p class="text-xs text-slate-600">Hanya berlaku untuk matriks persegi dengan jumlah baris dan kolom sama.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. CONTOH SOAL & PEMBAHASAN -->
+        <section id="contoh" class="tab-content hidden fade-in">
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200/80 p-6 sm:p-10">
+                <div class="mb-6">
+                    <span class="text-xs font-bold uppercase tracking-wider text-indigo-600">Pembahasan Lengkap</span>
+                    <h2 class="text-2xl font-extrabold text-slate-900 mt-1">6 Contoh Soal & Langkah Penyelesaian</h2>
+                    <p class="text-slate-500 text-sm mt-1">Klik setiap kartu soal untuk membuka atau menutup langkah penyelesaiannya secara detail.</p>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- Soal 1 -->
+                    <details class="group rounded-2xl border border-slate-200 bg-slate-50/50 open:bg-white open:shadow-md transition-all" open>
+                        <summary class="flex items-center justify-between p-5 cursor-pointer list-none">
+                            <div class="flex items-center gap-3">
+                                <span class="w-8 h-8 rounded-xl bg-indigo-600 text-white font-bold text-sm flex items-center justify-center shrink-0">01</span>
+                                <span class="font-bold text-slate-800 text-sm sm:text-base">Perkalian Matriks Ordo $2 \times 3$ dan $3 \times 2$</span>
+                            </div>
+                            <span class="text-indigo-600 font-semibold text-xs group-open:rotate-180 transition-transform">▼</span>
+                        </summary>
+                        <div class="px-5 pb-6 pt-2 border-t border-slate-100 text-sm sm:text-base space-y-3 overflow-x-auto">
+                            <p class="text-slate-700">Tentukan hasil perkalian: $\begin{bmatrix} 2 & 1 & -3 \\ -1 & 0 & 2 \end{bmatrix} \begin{bmatrix} -1 & 2 \\ 3 & 0 \\ 4 & 2 \end{bmatrix}$</p>
+                            <div class="p-4 rounded-xl bg-indigo-50/60 border border-indigo-100 space-y-2">
+                                <p class="text-xs font-bold uppercase text-indigo-700">Penyelesaian:</p>
+                                <p>$= \begin{bmatrix} 2(-1) + 1(3) + (-3)(4) & 2(2) + 1(0) + (-3)(2) \\ -1(-1) + 0(3) + 2(4) & -1(2) + 0(0) + 2(2) \end{bmatrix}$</p>
+                                <p>$= \begin{bmatrix} -2 + 3 - 12 & 4 + 0 - 6 \\ 1 + 0 + 8 & -2 + 0 + 4 \end{bmatrix} = \begin{bmatrix} -11 & -2 \\ 9 & 2 \end{bmatrix}$</p>
+                            </div>
+                        </div>
+                    </details>
+
+                    <!-- Soal 2 -->
+                    <details class="group rounded-2xl border border-slate-200 bg-slate-50/50 open:bg-white open:shadow-md transition-all">
+                        <summary class="flex items-center justify-between p-5 cursor-pointer list-none">
+                            <div class="flex items-center gap-3">
+                                <span class="w-8 h-8 rounded-xl bg-indigo-600 text-white font-bold text-sm flex items-center justify-center shrink-0">02</span>
+                                <span class="font-bold text-slate-800 text-sm sm:text-base">Penerapan Tabel Total Biaya Pembuatan Roti</span>
+                            </div>
+                            <span class="text-indigo-600 font-semibold text-xs group-open:rotate-180 transition-transform">▼</span>
+                        </summary>
+                        <div class="px-5 pb-6 pt-2 border-t border-slate-100 text-sm sm:text-base space-y-3 overflow-x-auto">
+                            <p class="text-slate-700">Diketahui matriks kebutuhan bahan $A = \begin{bmatrix} 3 & 2 \\ 2 & 1 \\ 4 & 1 \end{bmatrix}$ dan matriks harga bahan bulan Januari & Februari $B = \begin{bmatrix} 5000 & 5500 \\ 6000 & 7000 \end{bmatrix}$. Tentukan matriks total biaya!</p>
+                            <div class="p-4 rounded-xl bg-indigo-50/60 border border-indigo-100 space-y-2">
+                                <p class="text-xs font-bold uppercase text-indigo-700">Penyelesaian:</p>
+                                <p>$A \times B = \begin{bmatrix} 3(5000)+2(6000) & 3(5500)+2(7000) \\ 2(5000)+1(6000) & 2(5500)+1(7000) \\ 4(5000)+1(6000) & 4(5500)+1(7000) \end{bmatrix} = \begin{bmatrix} 27000 & 30500 \\ 16000 & 18000 \\ 26000 & 29000 \end{bmatrix}$</p>
+                            </div>
+                        </div>
+                    </details>
+
+                    <!-- Soal 3 -->
+                    <details class="group rounded-2xl border border-slate-200 bg-slate-50/50 open:bg-white open:shadow-md transition-all">
+                        <summary class="flex items-center justify-between p-5 cursor-pointer list-none">
+                            <div class="flex items-center gap-3">
+                                <span class="w-8 h-8 rounded-xl bg-indigo-600 text-white font-bold text-sm flex items-center justify-center shrink-0">03</span>
+                                <span class="font-bold text-slate-800 text-sm sm:text-base">Penggunaan Sifat Distributif ($AB + AC$)</span>
+                            </div>
+                            <span class="text-indigo-600 font-semibold text-xs group-open:rotate-180 transition-transform">▼</span>
+                        </summary>
+                        <div class="px-5 pb-6 pt-2 border-t border-slate-100 text-sm sm:text-base space-y-3 overflow-x-auto">
+                            <p class="text-slate-700">Diketahui $A = \begin{bmatrix} 3 & 4 \\ 1 & 6 \end{bmatrix}$, $B = \begin{bmatrix} 7 & -9 \\ 8 & 15 \end{bmatrix}$, dan $C = \begin{bmatrix} -6 & 11 \\ -7 & -12 \end{bmatrix}$. Tentukan hasil dari $AB + AC$!</p>
+                            <div class="p-4 rounded-xl bg-indigo-50/60 border border-indigo-100 space-y-2">
+                                <p class="text-xs font-bold uppercase text-indigo-700">Penyelesaian:</p>
+                                <p>$AB + AC = A(B + C) = \begin{bmatrix} 3 & 4 \\ 1 & 6 \end{bmatrix} \left( \begin{bmatrix} 7 & -9 \\ 8 & 15 \end{bmatrix} + \begin{bmatrix} -6 & 11 \\ -7 & -12 \end{bmatrix} \right)$</p>
+                                <p>$= \begin{bmatrix} 3 & 4 \\ 1 & 6 \end{bmatrix} \begin{bmatrix} 1 & 2 \\ 1 & 3 \end{bmatrix} = \begin{bmatrix} 3+4 & 6+12 \\ 1+6 & 2+18 \end{bmatrix} = \begin{bmatrix} 7 & 18 \\ 7 & 20 \end{bmatrix}$</p>
+                            </div>
+                        </div>
+                    </details>
+
+                    <!-- Soal 4 -->
+                    <details class="group rounded-2xl border border-slate-200 bg-slate-50/50 open:bg-white open:shadow-md transition-all">
+                        <summary class="flex items-center justify-between p-5 cursor-pointer list-none">
+                            <div class="flex items-center gap-3">
+                                <span class="w-8 h-8 rounded-xl bg-indigo-600 text-white font-bold text-sm flex items-center justify-center shrink-0">04</span>
+                                <span class="font-bold text-slate-800 text-sm sm:text-base">Penggunaan Sifat Asosiatif Tiga Matriks</span>
+                            </div>
+                            <span class="text-indigo-600 font-semibold text-xs group-open:rotate-180 transition-transform">▼</span>
+                        </summary>
+                        <div class="px-5 pb-6 pt-2 border-t border-slate-100 text-sm sm:text-base space-y-3 overflow-x-auto">
+                            <p class="text-slate-700">Tentukan hasil dari $\begin{bmatrix} 5 & 3 \\ 4 & -2 \end{bmatrix} \times \begin{bmatrix} \frac{3}{4} & -\frac{1}{4} \\ \frac{5}{4} & \frac{3}{2} \end{bmatrix} \times \begin{bmatrix} 8 & -4 \\ -8 & 4 \end{bmatrix}$</p>
+                            <div class="p-4 rounded-xl bg-indigo-50/60 border border-indigo-100 space-y-2">
+                                <p class="text-xs font-bold uppercase text-indigo-700">Penyelesaian:</p>
+                                <p>Kelompokkan dua matriks terakhir untuk menghilangkan pecahan terlebih dahulu:</p>
+                                <p>$= \begin{bmatrix} 5 & 3 \\ 4 & -2 \end{bmatrix} \times \begin{bmatrix} 6+2 & -3-1 \\ 10-12 & -5+6 \end{bmatrix} = \begin{bmatrix} 5 & 3 \\ 4 & -2 \end{bmatrix} \times \begin{bmatrix} 8 & -4 \\ -2 & 1 \end{bmatrix}$</p>
+                                <p>$= \begin{bmatrix} 40-6 & -20+3 \\ 32+4 & -16-2 \end{bmatrix} = \begin{bmatrix} 34 & -17 \\ 36 & -18 \end{bmatrix}$</p>
+                            </div>
+                        </div>
+                    </details>
+
+                    <!-- Soal 5 -->
+                    <details class="group rounded-2xl border border-slate-200 bg-slate-50/50 open:bg-white open:shadow-md transition-all">
+                        <summary class="flex items-center justify-between p-5 cursor-pointer list-none">
+                            <div class="flex items-center gap-3">
+                                <span class="w-8 h-8 rounded-xl bg-indigo-600 text-white font-bold text-sm flex items-center justify-center shrink-0">05</span>
+                                <span class="font-bold text-slate-800 text-sm sm:text-base">Polinomial / Fungsi Matriks $f(A)$</span>
+                            </div>
+                            <span class="text-indigo-600 font-semibold text-xs group-open:rotate-180 transition-transform">▼</span>
+                        </summary>
+                        <div class="px-5 pb-6 pt-2 border-t border-slate-100 text-sm sm:text-base space-y-3 overflow-x-auto">
+                            <p class="text-slate-700">Diketahui matriks $A = \begin{bmatrix} 2 & 1 \\ 0 & -3 \end{bmatrix}$ dan fungsi $f(x) = x^2 - 3x$. Tentukan matriks $f(A)$!</p>
+                            <div class="p-4 rounded-xl bg-indigo-50/60 border border-indigo-100 space-y-2">
+                                <p class="text-xs font-bold uppercase text-indigo-700">Penyelesaian:</p>
+                                <p>$f(A) = A^2 - 3A = \begin{bmatrix} 2 & 1 \\ 0 & -3 \end{bmatrix}\begin{bmatrix} 2 & 1 \\ 0 & -3 \end{bmatrix} - 3\begin{bmatrix} 2 & 1 \\ 0 & -3 \end{bmatrix}$</p>
+                                <p>$= \begin{bmatrix} 4 & -1 \\ 0 & 9 \end{bmatrix} - \begin{bmatrix} 6 & 3 \\ 0 & -9 \end{bmatrix} = \begin{bmatrix} -2 & -4 \\ 0 & 18 \end{bmatrix}$</p>
+                            </div>
+                        </div>
+                    </details>
+
+                    <!-- Soal 6 -->
+                    <details class="group rounded-2xl border border-slate-200 bg-slate-50/50 open:bg-white open:shadow-md transition-all">
+                        <summary class="flex items-center justify-between p-5 cursor-pointer list-none">
+                            <div class="flex items-center gap-3">
+                                <span class="w-8 h-8 rounded-xl bg-indigo-600 text-white font-bold text-sm flex items-center justify-center shrink-0">06</span>
+                                <span class="font-bold text-slate-800 text-sm sm:text-base">Kesamaan Dua Matriks & Sistem Persamaan</span>
+                            </div>
+                            <span class="text-indigo-600 font-semibold text-xs group-open:rotate-180 transition-transform">▼</span>
+                        </summary>
+                        <div class="px-5 pb-6 pt-2 border-t border-slate-100 text-sm sm:text-base space-y-3 overflow-x-auto">
+                            <p class="text-slate-700">Tentukan nilai $x$, $y$, dan $z$ jika $\begin{bmatrix} 2y & 2x \\ -3 & 1 \end{bmatrix}\begin{bmatrix} 3 & -1 \\ 1 & -2 \end{bmatrix} = \begin{bmatrix} 3x+4 & -10 \\ -8 & z \end{bmatrix}$</p>
+                            <div class="p-4 rounded-xl bg-indigo-50/60 border border-indigo-100 space-y-2">
+                                <p class="text-xs font-bold uppercase text-indigo-700">Penyelesaian:</p>
+                                <p>Kalikan ruas kiri: $\begin{bmatrix} 6y+2x & -2y-4x \\ -9+1 & 3-2 \end{bmatrix} = \begin{bmatrix} 3x+4 & -10 \\ -8 & z \end{bmatrix}$</p>
+                                <p>Sehingga diperoleh $\begin{bmatrix} 6y+2x & -2y-4x \\ -8 & 1 \end{bmatrix} = \begin{bmatrix} 3x+4 & -10 \\ -8 & z \end{bmatrix}$</p>
+                                <ul class="list-disc list-inside text-slate-700 space-y-1">
+                                    <li>Dari baris 2 kolom 2: $z = 1$.</li>
+                                    <li>Dari baris 1 kolom 2: $-2y - 4x = -10 \Rightarrow y = 5 - 2x$.</li>
+                                    <li>Substitusi ke baris 1 kolom 1: $6(5 - 2x) + 2x = 3x + 4 \Rightarrow 30 - 13x = 4 \Rightarrow x = 2$.</li>
+                                    <li>Diperoleh $y = 5 - 2(2) = 1$. Jadi, $x = 2$, $y = 1$, dan $z = 1$.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. KALKULATOR & SIMULASI INTERAKTIF -->
+        <section id="kalkulator" class="tab-content hidden fade-in">
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200/80 p-6 sm:p-10">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-violet-600">Laboratorium Virtual</span>
+                        <h2 class="text-2xl font-extrabold text-slate-900 mt-1">Simulasi Perkalian Matriks ($2 \times 2$)</h2>
+                        <p class="text-slate-500 text-sm mt-1">Ubah angka pada Matriks $A$ atau $B$ untuk mengamati proses perkalian baris dengan kolom secara real-time.</p>
+                    </div>
+                    <button onclick="randomizeMatrices()" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm transition self-start sm:self-center">
+                        Acak Angka
+                    </button>
+                </div>
+
+                <!-- Interactive Matrix Input Area -->
+                <div class="flex flex-col lg:flex-row items-center justify-center gap-6 sm:gap-8 p-6 sm:p-8 rounded-2xl bg-slate-50 border border-slate-200/80">
+                    <!-- Matriks A -->
+                    <div class="text-center">
+                        <span class="inline-block px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 text-xs font-bold mb-3">Matriks A</span>
+                        <div class="matrix-bracket bg-white rounded-xl shadow-xs">
+                            <div class="grid grid-cols-2 gap-2.5 p-1">
+                                <input type="number" id="a11" value="2" oninput="calculateMatrix()" class="w-16 h-14 text-lg font-bold text-center text-indigo-900 bg-indigo-50/40 border border-indigo-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                                <input type="number" id="a12" value="1" oninput="calculateMatrix()" class="w-16 h-14 text-lg font-bold text-center text-indigo-900 bg-indigo-50/40 border border-indigo-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                                <input type="number" id="a21" value="3" oninput="calculateMatrix()" class="w-16 h-14 text-lg font-bold text-center text-indigo-900 bg-indigo-50/40 border border-indigo-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                                <input type="number" id="a22" value="4" oninput="calculateMatrix()" class="w-16 h-14 text-lg font-bold text-center text-indigo-900 bg-indigo-50/40 border border-indigo-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Multiply Symbol -->
+                    <div class="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-500 font-bold text-xl shadow-xs">
+                        $\times$
+                    </div>
+
+                    <!-- Matriks B -->
+                    <div class="text-center">
+                        <span class="inline-block px-3 py-1 rounded-full bg-violet-100 text-violet-700 text-xs font-bold mb-3">Matriks B</span>
+                        <div class="matrix-bracket bg-white rounded-xl shadow-xs">
+                            <div class="grid grid-cols-2 gap-2.5 p-1">
+                                <input type="number" id="b11" value="1" oninput="calculateMatrix()" class="w-16 h-14 text-lg font-bold text-center text-violet-900 bg-violet-50/40 border border-violet-200 rounded-xl focus:ring-2 focus:ring-violet-500 focus:outline-none">
+                                <input type="number" id="b12" value="2" oninput="calculateMatrix()" class="w-16 h-14 text-lg font-bold text-center text-violet-900 bg-violet-50/40 border border-violet-200 rounded-xl focus:ring-2 focus:ring-violet-500 focus:outline-none">
+                                <input type="number" id="b21" value="3" oninput="calculateMatrix()" class="w-16 h-14 text-lg font-bold text-center text-violet-900 bg-violet-50/40 border border-violet-200 rounded-xl focus:ring-2 focus:ring-violet-500 focus:outline-none">
+                                <input type="number" id="b22" value="1" oninput="calculateMatrix()" class="w-16 h-14 text-lg font-bold text-center text-violet-900 bg-violet-50/40 border border-violet-200 rounded-xl focus:ring-2 focus:ring-violet-500 focus:outline-none">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step by Step Result Output -->
+                <div class="mt-6 p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-indigo-50 via-white to-violet-50 border border-indigo-100">
+                    <h3 class="text-sm font-bold uppercase tracking-wider text-indigo-600 text-center mb-4">Proses & Hasil Perkalian ($A \times B$)</h3>
+                    <div id="matrix-result" class="text-center text-base sm:text-xl text-slate-800 overflow-x-auto py-2">
+                        <!-- Rendered via KaTeX -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200/80 py-6 text-center text-xs sm:text-sm text-slate-500">
+        <p>Modul Pembelajaran Interaktif Matematika • Topik Perkalian Matriks</p>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        const solvedQuestions = new Set();
+
+        function renderAllMath() {
+            if (window.renderMathInElement) {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        { left: '$$', right: '$$', display: true },
+                        { left: '$', right: '$', display: false }
+                    ],
+                    throwOnError: false
+                });
+            }
+        }
+
+        function switchTab(tabId, btnElement) {
+            // Hide all sections
+            document.querySelectorAll('.tab-content').forEach(section => {
+                section.classList.add('hidden');
+            });
+
+            // Show selected section
+            const activeSection = document.getElementById(tabId);
+            activeSection.classList.remove('hidden');
+
+            // Update navigation button styling
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-indigo-600', 'text-white', 'shadow-sm', 'shadow-indigo-200');
+                btn.classList.add('text-slate-600', 'hover:bg-slate-100');
+            });
+
+            if (btnElement) {
+                btnElement.classList.remove('text-slate-600', 'hover:bg-slate-100');
+                btnElement.classList.add('bg-indigo-600', 'text-white', 'shadow-sm', 'shadow-indigo-200');
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function triggerTab(tabId) {
+            const buttons = document.querySelectorAll('.nav-btn');
+            buttons.forEach(btn => {
+                if (btn.getAttribute('onclick').includes(tabId)) {
+                    switchTab(tabId, btn);
+                }
+            });
+        }
+
+        function checkMatrixGrid(questionNumber) {
+            const inputs = document.querySelectorAll(`input[data-q="${questionNumber}"]`);
+            const statusLabel = document.getElementById(`status-${questionNumber}`);
+            let allCorrect = true;
+            let hasEmpty = false;
+
+            inputs.forEach(input => {
+                const rawVal = input.value.trim();
+                const expected = parseFloat(input.getAttribute('data-ans'));
+
+                if (rawVal === '') {
+                    hasEmpty = true;
+                    allCorrect = false;
+                    input.classList.remove('border-emerald-500', 'bg-emerald-50', 'border-rose-500', 'bg-rose-50');
+                    input.classList.add('border-amber-400', 'bg-amber-50');
+                    return;
+                }
+
+                const userVal = parseFloat(rawVal);
+                if (userVal === expected) {
+                    input.classList.remove('border-slate-300', 'border-rose-500', 'bg-rose-50', 'border-amber-400', 'bg-amber-50');
+                    input.classList.add('border-emerald-500', 'bg-emerald-50', 'text-emerald-800');
+                } else {
+                    allCorrect = false;
+                    input.classList.remove('border-slate-300', 'border-emerald-500', 'bg-emerald-50', 'border-amber-400', 'bg-amber-50');
+                    input.classList.add('border-rose-500', 'bg-rose-50', 'text-rose-800');
+                }
+            });
+
+            if (hasEmpty) {
+                statusLabel.textContent = "Lengkapi semua kotak";
+                statusLabel.className = "text-xs font-bold text-amber-600";
+            } else if (allCorrect) {
+                statusLabel.textContent = "Tepat Sekali!";
+                statusLabel.className = "text-xs font-bold text-emerald-600";
+                solvedQuestions.add(questionNumber);
+                document.getElementById('warmup-score').textContent = solvedQuestions.size;
+            } else {
+                statusLabel.textContent = "Masih ada yang keliru";
+                statusLabel.className = "text-xs font-bold text-rose-600";
+            }
+        }
+
+        function formatNum(num) {
+            return num < 0 ? `(${num})` : `${num}`;
+        }
+
+        function calculateMatrix() {
+            const a11 = parseFloat(document.getElementById('a11').value) || 0;
+            const a12 = parseFloat(document.getElementById('a12').value) || 0;
+            const a21 = parseFloat(document.getElementById('a21').value) || 0;
+            const a22 = parseFloat(document.getElementById('a22').value) || 0;
+
+            const b11 = parseFloat(document.getElementById('b11').value) || 0;
+            const b12 = parseFloat(document.getElementById('b12').value) || 0;
+            const b21 = parseFloat(document.getElementById('b21').value) || 0;
+            const b22 = parseFloat(document.getElementById('b22').value) || 0;
+
+            const c11 = (a11 * b11) + (a12 * b21);
+            const c12 = (a11 * b12) + (a12 * b22);
+            const c21 = (a21 * b11) + (a22 * b21);
+            const c22 = (a21 * b12) + (a22 * b22);
+
+            const stepLatex = `$$\\begin{bmatrix} ${a11} \\cdot ${formatNum(b11)} + ${a12} \\cdot ${formatNum(b21)} & ${a11} \\cdot ${formatNum(b12)} + ${a12} \\cdot ${formatNum(b22)} \\\\ ${a21} \\cdot ${formatNum(b11)} + ${a22} \\cdot ${formatNum(b21)} & ${a21} \\cdot ${formatNum(b12)} + ${a22} \\cdot ${formatNum(b22)} \\end{bmatrix} = \\begin{bmatrix} ${c11} & ${c12} \\\\ ${c21} & ${c22} \\end{bmatrix}$$`;
+
+            const resDiv = document.getElementById('matrix-result');
+            resDiv.innerHTML = stepLatex;
+
+            if (window.renderMathInElement) {
+                renderMathInElement(resDiv, {
+                    delimiters: [{ left: '$$', right: '$$', display: true }],
+                    throwOnError: false
+                });
+            }
+        }
+
+        function randomizeMatrices() {
+            const ids = ['a11', 'a12', 'a21', 'a22', 'b11', 'b12', 'b21', 'b22'];
+            ids.forEach(id => {
+                document.getElementById(id).value = Math.floor(Math.random() * 11) - 4;
+            });
+            calculateMatrix();
+        }
+
+        window.onload = function () {
+            renderAllMath();
+            calculateMatrix();
+        };
+    </script>
+</body>
+</html>
